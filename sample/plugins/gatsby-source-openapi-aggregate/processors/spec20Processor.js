@@ -1,9 +1,9 @@
 const spec20Processor = (name, spec) => {
-  const rootId = `spec.${name}`
+  const rootId = `spec.${name}`;
 
   const definitions = Object.keys(spec.definitions).map(d => {
-    const definition = spec.definitions[d]
-    const properties = definition.properties || {}
+    const definition = spec.definitions[d];
+    const properties = definition.properties || {};
 
     return {
       id: `${rootId}.definition.${d}`,
@@ -12,63 +12,70 @@ const spec20Processor = (name, spec) => {
       fields: {
         name: d,
         properties: Object.keys(properties).map(k => {
-          const property = properties[k]
+          const property = properties[k];
           return {
             name: k,
             type: property.type,
             description: property.description,
             format: property.format,
-            example: property.example,
-          }
-        }),
-      },
-    }
-  })
+            example: property.example
+          };
+        })
+      }
+    };
+  });
 
-  const paths = []
-  const responses = []
+  /**
+   * 
+   * @param {SpecParameter} parameter 
+   */
+  const unrefParameters = (parameter) => {
+    if (!parameter.$ref) return parameter;
+
+    const paramId = parameter.$ref.replace('#/parameters/', '');
+
+    return Object({}, spec.parameters[paramId], { $ref: parameter.$ref });
+  }
+
+  const paths = [];
+  const responses = [];
   Object.keys(spec.paths).forEach(p => {
     Object.keys(spec.paths[p]).forEach(v => {
-      const path = spec.paths[p][v]
+      const path = spec.paths[p][v];
       const pathResponses = Object.keys(path.responses).map(r => {
-        const response = path.responses[r]
+        const response = path.responses[r];
 
-        let ref = null
+        let ref = null;
 
         if (response.schema) {
-          ref =
-            response.schema.type === 'array'
-              ? response.schema.items.$ref
-              : response.schema.$ref
+          ref = response.schema.type === 'array' ? response.schema.items.$ref : response.schema.$ref;
         }
 
-        const definitionId = ref ? ref.replace('#/definitions/', '') : null
+        const definitionId = ref ? ref.replace('#/definitions/', '') : null;
 
         return {
           id: `${rootId}.path.${p}.verb.${v}.response.${r}`,
           parent: `${rootId}.path.${p}.verb.${v}`,
-          children: definitionId
-            ? [`${rootId}.definition.${definitionId}`]
-            : [],
+          children: definitionId ? [`${rootId}.definition.${definitionId}`] : [],
           fields: {
             statusCode: r,
-            description: response.description,
-          },
-        }
-      })
+            description: response.description
+          }
+        };
+      });
 
       pathResponses.forEach(r => {
-        responses.push(r)
-      })
+        responses.push(r);
+      });
 
-      let xfields = {}
+      let xfields = {};
 
       // copy x-* extension properties
       for (key in path) {
         if (key.startsWith('x-')) {
           // convert snake-case to snake_case
           snake_case = key.replace(/-/g, '_')
-          xfields[snake_case] = path[key]
+          xfields[snake_case] = path[key];
         }
       }
 
@@ -82,7 +89,7 @@ const spec20Processor = (name, spec) => {
             verb: v,
             summary: path.summary,
             description: path.description,
-            parameters: path.parameters,
+          parameters: path.parameters && path.parameters.map(unrefParameters),
             tags: path.tags,
             tag: path.tags ? path.tags.join(',') : null,
             operationId: path.operationId,
@@ -90,13 +97,11 @@ const spec20Processor = (name, spec) => {
             consumes: path.consumes,
             produces: path.produces,
             schemes: path.schemes,
-            deprecated: path.deprecated,
-          },
-          xfields,
-        ),
-      })
-    })
-  })
+          deprecated: path.deprecated
+        }, xfields)
+      });
+    });
+  });
 
   const information = {
     id: rootId,
@@ -110,16 +115,16 @@ const spec20Processor = (name, spec) => {
       host: spec.host,
       schemes: spec.schemes,
       basePath: spec.basePath,
-      produces: spec.produces,
-    },
-  }
+      produces: spec.produces
+    }
+  };
 
   return {
     information,
     paths,
     responses,
-    definitions,
-  }
-}
+    definitions
+  };
+};
 
-module.exports = spec20Processor
+module.exports = spec20Processor;

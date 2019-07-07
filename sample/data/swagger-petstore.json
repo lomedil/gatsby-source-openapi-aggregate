@@ -1,8 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description":
-      "This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
+    "description": "This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
     "version": "1.0.0",
     "title": "Swagger Petstore",
     "termsOfService": "http://swagger.io/terms/",
@@ -50,13 +49,7 @@
         "produces": ["application/xml", "application/json"],
         "parameters": [
           {
-            "in": "body",
-            "name": "body",
-            "description": "Pet object that needs to be added to the store",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Pet"
-            }
+            "$ref": "#/parameters/PetBody"
           }
         ],
         "responses": {
@@ -79,13 +72,7 @@
         "produces": ["application/xml", "application/json"],
         "parameters": [
           {
-            "in": "body",
-            "name": "body",
-            "description": "Pet object that needs to be added to the store",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Pet"
-            }
+            "$ref": "#/parameters/PetBody"
           }
         ],
         "responses": {
@@ -110,16 +97,14 @@
       "get": {
         "tags": ["pet"],
         "summary": "Finds Pets by status",
-        "description":
-          "Multiple status values can be provided with comma separated strings",
+        "description": "Multiple status values can be provided with comma separated strings",
         "operationId": "findPetsByStatus",
         "produces": ["application/xml", "application/json"],
         "parameters": [
           {
             "name": "status",
             "in": "query",
-            "description":
-              "Status values that need to be considered for filter",
+            "description": "Status values that need to be considered for filter",
             "required": true,
             "type": "array",
             "items": {
@@ -155,8 +140,7 @@
       "get": {
         "tags": ["pet"],
         "summary": "Finds Pets by tags",
-        "description":
-          "Muliple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
+        "description": "Muliple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
         "operationId": "findPetsByTags",
         "produces": ["application/xml", "application/json"],
         "parameters": [
@@ -419,8 +403,7 @@
       "get": {
         "tags": ["store"],
         "summary": "Find purchase order by ID",
-        "description":
-          "For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions",
+        "description": "For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions",
         "operationId": "getOrderById",
         "produces": ["application/xml", "application/json"],
         "parameters": [
@@ -453,8 +436,7 @@
       "delete": {
         "tags": ["store"],
         "summary": "Delete purchase order by ID",
-        "description":
-          "For valid response try integer IDs with positive integer value. Negative or non-integer values will generate API errors",
+        "description": "For valid response try integer IDs with positive integer value. Negative or non-integer values will generate API errors",
         "operationId": "deleteOrder",
         "produces": ["application/xml", "application/json"],
         "parameters": [
@@ -633,8 +615,7 @@
           {
             "name": "username",
             "in": "path",
-            "description":
-              "The name that needs to be fetched. Use user1 for testing. ",
+            "description": "The name that needs to be fetched. Use user1 for testing. ",
             "required": true,
             "type": "string"
           }
@@ -727,6 +708,17 @@
       "type": "apiKey",
       "name": "api_key",
       "in": "header"
+    }
+  },
+  "parameters": {
+    "petParam": {
+      "in": "body",
+      "name": "body",
+      "description": "Pet object that needs to be added to the store",
+      "required": true,
+      "schema": {
+        "$ref": "#/definitions/Pet"
+      }
     }
   },
   "definitions": {
